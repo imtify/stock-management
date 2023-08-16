@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import Image from "next/image";
+import axios from "axios";
 
 export default function Home() {
   const [productForm, setProductForm] = useState({});
@@ -9,18 +10,9 @@ export default function Home() {
   const addProduct = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productForm),
-      });
-      if (response.ok) {
-        console.log("Product Add Sucessfully");
-      } else {
-        console.log("Error add sucessfully");
-      }
+      const response = await axios.post("/api/product", productForm);
+      console.log(response.data);
+      setProductForm({});
     } catch (error) {
       console.error("Error adding product:", error);
     }
