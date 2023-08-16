@@ -4,40 +4,33 @@ import Header from "@/components/Header";
 import Image from "next/image";
 
 export default function Home() {
-  const initialStockData = [
-    { id: 1, name: "Laptop", quantity: 10, price: 100 },
-    { id: 2, name: "Mobile", quantity: 5, price: 120 },
-    { id: 3, name: "Handheld", quantity: 8, price: 80 },
-    // Add more initial products as needed
-  ];
+  const [productForm, setProductForm] = useState({});
 
-  const [stockData, setStockData] = useState(initialStockData);
-  const [newProductName, setNewProductName] = useState("");
-  const [newProductQuantity, setNewProductQuantity] = useState("");
-  const [newProductPrice, setNewProductPrice] = useState("");
-  const [searchItem, setSearchItem] = useState("");
-
-  const handleAddProduct = () => {
-    if (newProductName && newProductQuantity) {
-      const newProduct = {
-        id: stockData.length + 1,
-        name: newProductName,
-        quantity: parseInt(newProductQuantity),
-        price: parseInt(newProductPrice),
-      };
-      setStockData([...stockData, newProduct]);
-      setNewProductName("");
-      setNewProductQuantity("");
-      setNewProductPrice("");
+  const addProduct = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/product", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productForm),
+      });
+      if (response.ok) {
+        console.log("Product Add Sucessfully");
+      } else {
+        console.log("Error add sucessfully");
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
     }
   };
 
-  const filteredStockData = stockData.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchItem.toLowerCase()) ||
-      product.quantity.toString().includes(searchItem) ||
-      product.price.toString().includes(searchItem)
-  );
+  const handleChange = (e) => {
+    setProductForm({ ...productForm, [e.target.name]: e.target.value });
+  };
+
+  console.log(productForm);
 
   return (
     <>
@@ -48,32 +41,32 @@ export default function Home() {
           <div className="mb-2">
             <label className="block font-semibold mb-1">Product Name</label>
             <input
+              name="slug"
+              onChange={handleChange}
               type="text"
-              value={newProductName}
-              onChange={(e) => setNewProductName(e.target.value)}
               className="w-full px-2 py-1 border rounded"
             />
           </div>
           <div className="mb-2">
             <label className="block font-semibold mb-1">Quantity</label>
             <input
+              name="quantity"
+              onChange={handleChange}
               type="number"
-              value={newProductQuantity}
-              onChange={(e) => setNewProductQuantity(e.target.value)}
               className="w-full px-2 py-1 border rounded"
             />
           </div>
           <div className="mb-2">
             <label className="block font-semibold mb-1">Price</label>
             <input
+              name="price"
+              onChange={handleChange}
               type="number"
-              value={newProductPrice}
-              onChange={(e) => setNewProductPrice(e.target.value)}
               className="w-full px-2 py-1 border rounded"
             />
           </div>
           <button
-            onClick={handleAddProduct}
+            onClick={addProduct}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Add Product
@@ -87,8 +80,6 @@ export default function Home() {
             <h2 className="text-lg font-semibold mb-2">Search Products</h2>
             <input
               type="text"
-              value={searchItem}
-              onChange={(e) => setSearchItem(e.target.value)}
               className="w-full px-2 py-1 border rounded"
               placeholder="Search by product name"
             />
@@ -105,14 +96,12 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {filteredStockData.map((product) => (
-                <tr key={product.id}>
-                  <td className="border py-2 px-4">{product.id}</td>
-                  <td className="border py-2 px-4">{product.name}</td>
-                  <td className="border py-2 px-4">{product.quantity}</td>
-                  <td className="border py-2 px-4">{product.price}</td>
-                </tr>
-              ))}
+              <tr>
+                <td className="border py-2 px-4">1</td>
+                <td className="border py-2 px-4">Product 1</td>
+                <td className="border py-2 px-4">3</td>
+                <td className="border py-2 px-4">100</td>
+              </tr>
             </tbody>
           </table>
         </div>
