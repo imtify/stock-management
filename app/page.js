@@ -167,7 +167,6 @@ export default function Home() {
               className="w-full px-2 py-1 border rounded"
               placeholder="Enter Product ID or Name"
             />
-            <button onClick={onDropdown}>Search</button>
           </div>
 
           <button
