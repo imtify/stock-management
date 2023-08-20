@@ -12,6 +12,7 @@ export default function Home() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [dropdown, setDropdown] = useState([]);
 
   const addProduct = async (e) => {
     e.preventDefault();
@@ -29,16 +30,16 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const filtered = products.filter(
-      (product) =>
-        product.slug?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
-        "" ||
-        product.id?.toString()?.includes(searchQuery) ||
-        ""
-    );
-    setFilteredProducts(filtered);
-  }, [searchQuery, products]);
+  // useEffect(() => {
+  //   const filtered = products.filter(
+  //     (product) =>
+  //       product.slug?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+  //       "" ||
+  //       product.id?.toString()?.includes(searchQuery) ||
+  //       ""
+  //   );
+  //   setFilteredProducts(filtered);
+  // }, [searchQuery, products]);
 
   const handleChange = (e) => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
@@ -52,6 +53,14 @@ export default function Home() {
     };
     fetchProducts();
   }, []);
+
+  const onDropdown = async (e) => {
+    setSearchQuery(e.target.value);
+    const response = await fetch("/api/search?query=" + searchQuery);
+    let rjson = await response.json();
+    console.log(rjson.products);
+    setDropdown(rjson.products);
+  };
 
   const handleDownload = () => {
     const xlsData = [
@@ -151,10 +160,14 @@ export default function Home() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                onDropdown(e);
+              }}
+              onBlur={onDropdown}
               className="w-full px-2 py-1 border rounded"
               placeholder="Enter Product ID or Name"
             />
+            <button onClick={onDropdown}>Search</button>
           </div>
 
           <button
@@ -191,14 +204,23 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product.slug}>
-                    <td className="border py-2 px-4">{product.id}</td>
-                    <td className="border py-2 px-4">{product.slug}</td>
-                    <td className="border py-2 px-4">{product.quantity}</td>
-                    <td className="border py-2 px-4">{product.price}</td>
-                  </tr>
-                ))}
+                {dropdown.length > 0
+                  ? dropdown.map((product) => (
+                      <tr key={product.slug}>
+                        <td className="border py-2 px-4">{product.id}</td>
+                        <td className="border py-2 px-4">{product.slug}</td>
+                        <td className="border py-2 px-4">{product.quantity}</td>
+                        <td className="border py-2 px-4">{product.price}</td>
+                      </tr>
+                    ))
+                  : products.map((product) => (
+                      <tr key={product.slug}>
+                        <td className="border py-2 px-4">{product.id}</td>
+                        <td className="border py-2 px-4">{product.slug}</td>
+                        <td className="border py-2 px-4">{product.quantity}</td>
+                        <td className="border py-2 px-4">{product.price}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
