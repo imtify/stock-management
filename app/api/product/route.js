@@ -6,10 +6,10 @@ export async function GET(request) {
   const client = new MongoClient(uri);
   try {
     const database = client.db("inventory");
-    const products = database.collection("products");
+    const collection = database.collection("products");
     const query = {};
-    const product = await products.find(query).toArray();
-    return NextResponse.json({ product });
+    const products = await collection.find(query).toArray();
+    return NextResponse.json({ products });
   } finally {
     await client.close();
   }
